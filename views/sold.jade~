@@ -13,7 +13,7 @@ block content
                 .controls
                   select.dropdown-toggle.input-medium(id="category", name="category", required="required")
                     option(value="60") Game of 60
-                    
+                    option(value="75") Game of 75
               .control-group
                 label.control-label Production No.
                 .controls

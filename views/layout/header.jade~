@@ -11,6 +11,8 @@
           li
             a(href="/sold") Sold Card
           li
+            a(href="/winner") Record Lucky Pick
+          li
             a(href="/verify") Verify Card
           li
             a(href="/download") Print Card
