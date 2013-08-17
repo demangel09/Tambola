@@ -1,0 +1,61 @@
+extends /views/layout/layout
+block content
+  .container-fluid
+    .row-fluid
+      .span12
+        .span6
+          .summary
+            table.table.table-striped.table-bordered.table-hover.table-condensed
+              thead
+                tr
+                  th Category
+                  th Production No.
+                  th Lucky No.
+                  th Lucky Date
+                  th Status
+              tbody
+                - var items = lucky
+                each item in items
+                  tr
+                    td=item.category
+                    td=item.prod_id
+                    td=item.lucky_no
+                    td=item.lucky_date
+                    td=item.status
+        .span6
+          .summary
+            form.form-horizontal(method="POST",action="/record")
+              .title-bar
+                span.title Record Winning Combination
+              .control-group
+                label.control-label Category
+                .controls
+                  select.dropdown-toggle.input-medium(id="category", name="category", required="required")
+                    option(value="60") Game of 60
+                    option(value="75") Game of 75
+              .control-group
+                label.control-label Production No.
+                .controls
+                  select.dropdown-toggle.input-medium(id="prod_id", name="prod_id", required="required")
+                    - var items = production
+                    each item in items
+                      option(value=item.prod_id)=item.prod_id
+              .control-group
+                label.control-label Box Type
+                .controls
+                  select.dropdown-toggle.input-medium(id="box_type", name="box_type", required="required")
+                    option(value="6") Box of Six
+                    option(value="9") Box of Nine
+                    option(value="12") Box of Twelve
+                    option(value="15") Box of Fifteen
+                    option(value="18") Box of Eighteen
+              .control-group
+                label.control-label Lucky No's.
+                .controls.boxlist
+              .control-group
+                .controls
+                  button.btn.btn-success.input-medium(type="submit") Submit
+            
+block page-scripts
+  script(src="/thirdparty/bootstrap/js/jquery.dataTables.min.js",type="text/javascript")
+  script(src="/javascripts/record.js")

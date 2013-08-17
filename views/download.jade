@@ -1,0 +1,21 @@
+extends /views/layout/layout
+block content
+  .container-fluid
+    .row-fluid
+      .span12
+        .span6
+          .summary
+            form.form-horizontal(method="POST",action="/download")
+              .title-bar
+                span.title Print Card
+              .control-group
+                label.control-label Production No.
+                .controls
+                  select.dropdown-toggle.input-medium(id="prod_id", name="prod_id", required="required")
+                    - var items = production
+                    each item in items
+                      option(value=item.prod_id)=item.prod_id
+              .control-group
+                .controls
+                  button.btn.btn-success.input-medium(type="submit") Submit
+block page-scripts

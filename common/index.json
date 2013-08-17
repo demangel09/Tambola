@@ -1,0 +1,6 @@
+[
+ {"table":"users","record":{"email":1},"option":{"unique": true}},
+ {"table":"users","record":{"username":1},"option":{"unique": true}},
+ {"table":"users","record":{"id":1},"option":{"unique": true}},
+ {"table":"users","record":{"firstname":1,"lastname":1,"level":1,"status":1,"department":1},"option":{}}
+]
