@@ -7,7 +7,7 @@ var print = module.exports = function(content,callback){
 	doc.fontSize(32);
 	doc.font('Arial-Bold');
 //	doc.font('Tw-Cen-MT-Condensed');
-	doc.image('./routes/Template4.PNG', 0, 0,{width: 615, height: 467});
+	doc.image('./routes/Template3.PNG', 0, 0,{width: 615, height: 467});
 	doc.fontSize(32);
 //Box A
 	doc.text(content[0].box[0],134,30,{width:35,align:'center'});

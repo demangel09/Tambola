@@ -1,0 +1,427 @@
+var async = require('async');
+var moment = require('moment');
+var db = require('../library/mongo.js').db;
+var printpdf = require('./print.js');
+module.exports = {
+	
+	home : function(req,res){
+		res.render('home');
+	},
+	print : function(req,res){
+		var content = {};
+		content.table = "productions";
+		content.condition = {};
+		content.sorting = {
+				prod_id : -1
+		};
+		db.list(content,function(err,result){
+			if(!result){
+				result = new Array();
+			}
+			res.render('print',{production:result});
+		});
+		
+	},
+	generate : function(req,res){
+		
+		var nos = function(length,callback){
+			var list = new Array();
+			while(list.length < length){
+				var no = Math.floor((Math.random()*Number(req.body.category))+1);
+				if(list.indexOf(no) == -1){
+					list.push(no);
+				}
+			}
+			var content = {};
+			content.table = 'combination';
+			content.condition = {
+				box : list
+			};
+			db.count(content,function(err,result){
+				if(result > 0){
+					nos(length);
+				}
+				else{
+					var content = {};
+					content.table = 'combination';
+					content.record = {
+							box : list
+					};
+					db.add(content,function(err,result){
+						callback(list);
+					});
+					
+				}
+			});
+		};
+
+		var card = function(callback){
+			var box = new Array();
+			
+			for(var i=2; i<=6; i++){
+				var set = i*3;
+				nos(set,function(result){
+					box.push(result);
+					if(box.length >= 5){
+						callback(box);
+					}
+				});
+			}
+		};
+		async.auto({
+			
+			generateCards : function(cb){
+				var qty = Number(req.body.quantity);
+				var cardno = new Array();
+				for(var i=0; i< qty; i++){
+					card(function(result){
+						cardno.push(result);
+						if(cardno.length >= qty){
+							cb(null,cardno);
+						}
+					});
+				}
+			},
+			generate_prodid : function(cb){
+                var content = {};
+                content.table = 'counters';
+                content.condition = {
+                    name : 'production'
+                };
+                content.sorting ={seq : -1};
+                content.record = {
+                    "$inc": { seq: 1 }
+                };
+                db.findAndModify(content,cb);
+            },
+            generate_comid : function(cb){
+                var content = {};
+                content.table = 'counters';
+                content.condition = {
+                    name : 'combination'
+                };
+                content.sorting ={seq : -1};
+                content.record = {
+                    "$inc": { seq: (Number(req.body.quantity) * 5) }
+                };
+                db.findAndModify(content,cb);
+            },
+			saveProduction : ['generate_prodid','generate_comid',function(cb,cres){
+				var exp = req.body.expiration;
+				var qty = Number(req.body.quantity);
+				var prodid = Number(cres.generate_prodid.seq);
+				var comid =  Number(cres.generate_comid.seq);
+				var category = req.body.category;
+				
+				var record = {
+					category : category,
+					prod_id : pad(prodid,6),
+					expiration : exp,
+					quantity : qty,
+					series :  pad((comid - (qty*5)),6) + " - " + pad(comid,6),
+					prod_date : moment().format("MM/DD/YYYY"),
+					status : "Generated"
+				};
+				var content = {};
+				content.table = 'productions';
+				content.record = record;
+				db.add(content,function(err,result){
+					cb(err,record);
+				});
+				
+			}],
+			updateCards : ['generateCards','saveProduction',function(cb,cres){
+				var cardnos = cres.generateCards;
+				var production = cres.saveProduction;
+				var series = Number(production.series.split(" - ")[0]);
+				var res_flag = 0;
+				console.log(cardnos);
+				for(var i in cardnos){
+					var temp_series = series;
+					for(var j in cardnos[i]){
+						series = (cardnos[i][j].length / 3) - 1 + temp_series;
+						var record = {};
+						record.box = cardnos[i][j];
+						record.series = series;
+						record.category = production.category;
+						record.prodid = production.prod_id;
+						record.prod_date = production.prod_date;
+						var content = {};
+						content.table = 'combination';
+						content.condition = {
+							box : cardnos[i][j]
+						};
+						content.record = record;
+						console.log(record);
+						db.update(content,function(err,result){
+							res_flag++;
+							if(res_flag >= (cardnos.length*5)){
+								cb(err,result);
+							}
+						});
+						series = temp_series + 5;
+					}
+					
+					
+				}
+			}]
+			
+		},function(err,result){
+			console.log(result);
+			res.redirect('/print');
+		});
+		
+	},
+	sold : function(req,res){
+		
+		async.auto({
+			production : function(cb){
+				var content = {};
+				content.table = "productions";
+				content.condition = {};
+				content.sorting = {
+						prod_id : -1
+				};
+				db.list(content,function(err,result){
+					if(!result){
+						result = new Array();
+					}
+					cb(null,result);
+				});
+			}
+		},function(err,result){
+			res.render('sold',{production:result.production});
+		});
+	},
+	sold_card : function(req,res){
+		
+		async.auto({
+			updateSeries : function(cb){
+				var series = Number(req.body.series);
+				var prodid = req.body.prod_id;
+				var j = 0;
+				for(var i= series; i<series+5;i++){
+					
+					var content = {};
+					content.table = "combination";
+					content.condition = {
+							series : i,
+							prodid : prodid
+					};
+					content.record = {
+							"$set" : {
+								sold : true,
+								sold_date : moment().format("MM/DD/YYYY")
+							}
+					}
+					db.update(content,function(err,result){
+						j++;
+						if(j==5){
+							cb(null,result);
+						}
+						
+					});
+				}
+				
+			}
+		},function(err,result){
+			res.redirect('/sold');
+		});
+	},
+	verify : function(req,res){
+		
+		async.auto({
+			production : function(cb){
+				var content = {};
+				content.table = "productions";
+				content.condition = {};
+				content.sorting = {
+						prod_id : -1
+				};
+				db.list(content,function(err,result){
+					if(!result){
+						result = new Array();
+					}
+					cb(null,result);
+				});
+			},
+			winner : function(cb){
+				var content = {};
+				content.table = "winner";
+				content.condition = {};
+				db.list(content,function(err,result){
+					if(!result){
+						result = new Array();
+					}
+					console.log(result);
+					cb(null,result);
+				});
+			}
+		},function(err,result){
+			res.render('verify',{production:result.production,combination:{},winner :result.winner[0]});
+		});
+		
+		
+	},
+	verify_winner : function(req,res){
+		async.auto({
+			production : function(cb){
+				var content = {};
+				content.table = "productions";
+				content.condition = {};
+				content.sorting = {
+						prod_id : -1
+				};
+				db.list(content,function(err,result){
+					if(!result){
+						result = new Array();
+					}
+					cb(null,result);
+				});
+			},
+			combination : function(cb){
+				var content = {};
+				content.table = "combination";
+				content.condition = {
+						series : Number(req.body.series),
+						sold : true,
+						sold_date : moment().format("MM/DD/YYYY")
+				};
+				console.log(content);
+				db.list(content,function(err,result){
+					if(!result){
+						result = new Array();
+					}
+					cb(null,result);
+				});
+			},
+			winner : function(cb){
+				var content = {};
+				content.table = "winner";
+				content.condition = {};
+				db.list(content,function(err,result){
+					if(!result){
+						result = new Array();
+					}
+					console.log(result);
+					cb(null,result);
+				});
+			}
+		},function(err,result){
+			res.render('verify',{production:result.production,combination:result.combination[0],winner:result.winner[0]});
+		});
+	},	
+	download : function(req,res){
+		
+		async.auto({
+			production : function(cb){
+				var content = {};
+				content.table = "productions";
+				content.condition = {};
+				content.sorting = {
+						prod_id : -1
+				};
+				db.list(content,function(err,result){
+					if(!result){
+						result = new Array();
+					}
+					cb(null,result);
+				});
+			}
+		},function(err,result){
+			res.render('download',{production:result.production});
+		});
+		
+		
+	},
+	download_card : function(req,res){
+		
+		async.auto({
+			production : function(cb){
+				var content = {};
+				content.table = "productions";
+				content.condition = {};
+				content.sorting = {
+						prod_id : -1
+				};
+				db.list(content,function(err,result){
+					if(!result){
+						result = new Array();
+					}
+					cb(null,result);
+				});
+			},
+			combination : function(cb){
+				var content = {};
+				content.table = "combination";
+				content.condition = {
+						prodid : req.body.prod_id
+				};
+				content.sorting = {
+						series : 1
+				};
+				db.list(content,function(err,result){
+					if(!result){
+						result = new Array();
+					}
+					cb(null,result);
+				});
+			},
+			printTofile : ['combination',function(cb,cres){
+
+				var files = new Array();
+				for(var i=0; i<cres.combination.length; i+=10){
+					var content = new Array();
+					for(var j=i;j<i+10;j++){
+						
+						if(cres.combination[j]){
+							cres.combination[j].series = pad(cres.combination[j].series,6);
+							content.push(cres.combination[j]);
+						}
+					}
+					printpdf(content,function(err,file){
+						console.log("printed");
+						console.log(content);
+						files.push(file);
+						if(files.length >= cres.combination.length){
+							console.log(files);
+							cb(null,files);
+						}
+					});
+				}
+			}]
+		},function(err,result){
+			console.log(result.combination);
+			res.render('download',{production:result.production,files:result.printTofile});
+		});
+		
+		
+	},
+	winner : function(req,res){
+		res.render('winner');
+	}
+	,
+	socket_lucky : function(req){
+		if(req.data){
+			var content = {};
+			content.table = "winner";
+			db.remove(content,function(err,result){
+				content.table = "winner"
+				content.record = {box:req.data};
+				db.add(content,function(err,result){
+					console.log(err);
+					console.log(result);
+					console.log(req.data);
+				});
+			});
+		}
+
+	}
+};
+
+
+function pad(n, width, z) {
+	  z = z || '0';
+	  n = n + '';
+	  return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+}

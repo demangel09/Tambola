@@ -116,6 +116,10 @@ span.title{
     width: 41px;
 }
 
+.span6.controls_sold.btn-success{
+margin-left: 177px;
+}
+
 .input-mini.winning-box{
 	height: 65px;
 	width: 55px;
@@ -142,7 +146,7 @@ width: 124px;
     padding-top: 31px;    
     background-image: url("/gameset/Box_of_9.png");
     border: none;
-    height: 218px;
+    height: 219px;
     padding-top: 31px;
     width: 184px;
 }
@@ -150,7 +154,7 @@ width: 124px;
 padding-top: 33px;
 background-image: url(/gameset/Box_of_12.png);
 border : 0px solid gray;
-height: 217px;
+height: 219px;
 width: 244px;
 }
 .controls.boxlist.boxbg15{
@@ -168,4 +172,24 @@ height: 217px;
 width: 365px;
 }
 
+.button-login {
+    background: url("/stylesheets/images/login.png") no-repeat scroll 0 0 transparent;
+    border-radius: 16px 16px 16px 16px;
+    display: table-cell;
+    font-weight: bold;
+    height: 30px;
+    text-align: center;
+    vertical-align: middle;
+    width: 106px;
+}
 
+.container {
+    position: relative;
+    padding: 20px;
+}
+
+.container .login-bg{
+    float: left;
+    margin: 0 450px;
+    position: fixed;
+}

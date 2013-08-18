@@ -1,0 +1,5 @@
+{ "_id" : { "$oid" : "520ec3156e1ff468cad039fb" }, "role" : "seller", "page" : "verify" }
+{ "_id" : { "$oid" : "520ec31d6e1ff468cad039fc" }, "role" : "seller", "page" : "sold_card" }
+{ "_id" : { "$oid" : "520ec37a6e1ff468cad039fd" }, "role" : "seller", "page" : "record" }
+{ "_id" : { "$oid" : "520ec38d6e1ff468cad039fe" }, "role" : "printer", "page" : "print" }
+{ "_id" : { "$oid" : "520ec3966e1ff468cad039ff" }, "role" : "printer", "page" : "generate" }

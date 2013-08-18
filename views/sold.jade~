@@ -3,6 +3,25 @@ block content
   .container-fluid
     .row-fluid
       .span12
+       .span6
+          .summary
+            table.table.table-striped.table-bordered.table-hover.table-condensed
+              thead
+                tr
+                  th Category
+                  th Production No.
+                  th Series
+                  th Sold
+                  th Print Date
+              tbody
+                - var items = production
+                each item in items
+                  tr
+                    td=item.category
+                    td=item.prod_id             
+                    td=item.series
+                    td=item.combination
+                    td=item.prod_date
         .span6
           .summary
             form.form-horizontal(method="POST",action="/sold")
@@ -13,7 +32,7 @@ block content
                 .controls
                   select.dropdown-toggle.input-medium(id="category", name="category", required="required")
                     option(value="60") Game of 60
-                    option(value="75") Game of 75
+                    
               .control-group
                 label.control-label Production No.
                 .controls
@@ -26,9 +45,10 @@ block content
                 .controls
                   input.input-medium(id="series", name="series", required="required")
               .control-group
-                .controls
+                .controls sold
                   button.btn.btn-success.input-medium(type="submit") Submit
             
 block page-scripts
   script(src="/thirdparty/bootstrap/js/jquery.dataTables.min.js",type="text/javascript")
   script(src="/javascripts/sold.js")
+  script(src="/javascripts/print.js")

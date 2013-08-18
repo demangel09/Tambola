@@ -1,6 +1,6 @@
 var mongoq = require('mongoq');
 var db = mongoq("mongodb://localhost/bingo");
-exports.db = {
+var model = exports.db = {
 		ObjectID : mongoq.mongodb.BSONPure.ObjectID,
 		count : function(content,cb){
 			db.collection(content.table)
@@ -97,3 +97,7 @@ exports.db = {
 		    });
         }
 };
+module.exports.model = function(req,res,next){
+	req.model = model;
+	return next();
+	};

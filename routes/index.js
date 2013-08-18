@@ -244,9 +244,21 @@ module.exports = {
 					}
 					cb(null,result);
 				});
+			},
+			winner : function(cb){
+				var content = {};
+				content.table = "winner";
+				content.condition = {};
+				db.list(content,function(err,result){
+					if(!result){
+						result = new Array();
+					}
+					console.log(result);
+					cb(null,result);
+				});
 			}
 		},function(err,result){
-			res.render('verify',{production:result.production,combination:{},winner :{}});
+			res.render('verify',{production:result.production,combination:{},winner :result.winner[0]});
 		});
 		
 		
@@ -404,7 +416,29 @@ module.exports = {
 			});
 		}
 
+	},
+        login : function(req,res){
+		console.log(req.path);
+		res.render('login');
+	},
+	
+	process_login : function (req,res){
+		
+		passport.authenticate('local', { failureRedirect: '/login', failureFlash: true }, function(req,res){
+			res.redirect('/main');
+		});
+	},
+	
+	main : function(req,res){
+		console.log(req);
+		res.render('main');
+	},
+	
+	process_main : function(req,res){
+		console.log(req.params);
+		res.render('main');
 	}
+	
 };
 
 

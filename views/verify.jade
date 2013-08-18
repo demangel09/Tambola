@@ -11,7 +11,7 @@ block content
           .summary
             form.form-horizontal(method="POST",action="/verify")
               .title-bar
-                span.title Verify Card
+                span.title Winning Card Verification
               .control-group
                 label.control-label Category
                 .controls
@@ -40,7 +40,11 @@ block content
                   input.input-medium(type="text", id="series",name="series", placeholder="Type series here", required="required")
               .control-group
                 .controls
-                  button.btn.btn-success.input-medium(type="submit") Submit
+                .span12
+                  .span6
+                    button.btn.btn-success.input-medium(type="submit") Submit
+                  .span6
+                    button.btn-large.btn-info.input-large(type="button",id = "clearme") Clear GAME
         .span6
           .summary
              .control-group(style="width:500px;")

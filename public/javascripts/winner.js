@@ -5,9 +5,24 @@ $(document).ready(function() {
 	var timer;
 	$(".boxes-75").html("");
 	for(var i=1; i<=75;i++){
-		var input = "<div class='span1' id='boxee-"+ i +"'><input type='text', class='input-mini winning-box', name=lucky_no[]></div>";
+		var win = $("[name='winner']").val().split(",");
+		if(win[i-1]){
+		var input = "<div class='span1' id='boxee-"+ i +"'><input type='text', class='input-mini winning-box', value='"+ win[i-1]+"', name='lucky_no[]'></div>";		}
+else{
+var input = "<div class='span1' id='boxee-"+ i +"'><input type='text', class='input-mini winning-box', name='lucky_no[]'></div>";	
+}
 		$(".boxes-75").html($(".boxes-75").html() + input);
+		if(i>1){
+			if(!$("#boxee-"+i).children().val()){
+				$("#boxee-"+i).hide();	
+			}	
+		}
+		if(win.length > 1){
+			$("#boxee-"+win.length+1).show();	
+		}
+
 	}
+
 	$("[name='lucky_no[]']").focus(function(){
 		for(var i in timers){
 			if(timers[i].time){
@@ -31,9 +46,12 @@ $(document).ready(function() {
 		 socket.emit('lucky',content);
 		 blinkme(thisname);
 	 });
-
-});
-
+		$("[name='lucky_no[]']").change(function(){
+			if($(this).val()){
+				$(this).parent().next().show();	
+				}
+		});
+	});
 function blinkme(name){
 	timers.push({time:setInterval(function(){
 		 $("#"+name).fadeIn().delay(50).fadeOut();

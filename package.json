@@ -12,6 +12,9 @@
     "mongoq": "*",
     "async": "*",
     "moment": "*",
-    "pdfkit": "*"
+    "pdfkit": "*",
+    "passport": "*",
+    "passport-local": "*",
+    "connect-flash": "*"
   }
 }

@@ -47,4 +47,16 @@ $(document).ready(function() {
     	  
     	  
       }
+
+  $("#clearme").click(function(){
+      $("[name='lucky_no[]']").each(function(){
+           $(this).val("");
+           if($(this).parent() && $(this).parent().attr("id").indexOf("boxee")!=-1){
+		 if($(this).parent().attr("id")!="boxee-1"){
+                         $(this).parent().hide();
+                 }
+           }
+ 	       
+      });
+   });
 });

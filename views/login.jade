@@ -1,0 +1,15 @@
+extends /views/layout/layout2
+block content
+	.container
+		.login-bg
+			if message
+				label.message=message
+			form(name="login", action="/login", method="POST")
+				.form-content
+					label Username
+					input(name="username", type="text")
+					label Password
+					input(name="password", type="password")
+					a(onClick="document.forms[0].submit();return true;")
+						.button-login Login
+block page-scripts

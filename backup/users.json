@@ -1,0 +1,2 @@
+{ "_id" : { "$oid" : "520ec2e36e1ff468cad039f9" }, "username" : "user_gen", "password" : "user_gen", "role" : "printer" }
+{ "_id" : { "$oid" : "520ec2f66e1ff468cad039fa" }, "username" : "user_ver", "password" : "user_ver", "role" : "seller" }

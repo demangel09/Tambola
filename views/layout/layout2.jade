@@ -1,0 +1,20 @@
+doctype 5
+html
+    head
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        include styles
+    title Tombolo
+    body
+        .header
+          .container
+            .navbar
+              .navbar-inner
+                .brand-wrapper
+                  a.brand(href="/")
+                    img.logo(src="/stylesheets/images/logo.png")
+                ul.nav
+                  li
+                    a(href="/login") Login
+        block content
+        include scripts
+        block page-scripts

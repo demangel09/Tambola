@@ -11,13 +11,13 @@ block content
           .summary
             form.form-horizontal(method="POST",action="/verify")
               .title-bar
-                span.title Verify Card
+                span.title Winning Card Verification
               .control-group
                 label.control-label Category
                 .controls
                   select.dropdown-toggle.input-medium(id="category", name="category", required="required")
                     option(value="60") Game of 60
-                    option(value="75") Game of 75
+               
               .control-group
                 label.control-label Production No.
                 .controls
@@ -40,7 +40,11 @@ block content
                   input.input-medium(type="text", id="series",name="series", placeholder="Type series here", required="required")
               .control-group
                 .controls
-                  button.btn.btn-success.input-medium(type="submit") Submit
+                .span12
+                  .span6
+                    button.btn.btn-success.input-medium(type="submit") Submit
+                  .span6
+                    button.btn-large.btn-info.input-large(type="button") Clear GAME
         .span6
           .summary
              .control-group(style="width:500px;")
